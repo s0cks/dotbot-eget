@@ -44,7 +44,7 @@ class EgetItem:
             self._disable_ssl = disable_ssl
         elif isinstance(item, dict):
             if not "item" in item:
-                raise Exception(f"invalid eget item: {item}")
+                raise Exception(f"invalid eget item: {item}, missing item key")
             self._item = item["item"]
             self._to = item["to"] if "to" in item else to
             self._pre_releases = (
@@ -120,7 +120,7 @@ class DotbotPlugin(dotbot.Plugin):
 
         if isinstance(data, str):
             # single instance get
-            self._eget(EgetItem(str))
+            self._eget(EgetItem(data))
             return True
         elif isinstance(data, list):
             for item in data:
@@ -128,14 +128,15 @@ class DotbotPlugin(dotbot.Plugin):
             return True
         elif not isinstance(data, dict):
             raise Exception(f"invalid eget data: {data}")
-        self._dest = data["dest"] if "dest" in data else None
+        self._dest = data["to"] if "to" in data else None
         if not "items" in data:
             raise Exception(f"data {data} needs key 'items'")
         for item in data["items"]:
             self._eget(EgetItem(item, to=self._dest))
+        return True
 
     def _eget(self, item):
         command = [self._eget_exec]
         command += item.get_command()
-        self._log.debuf(f"executing eget w/ args: {' '.join(command)}")
+        self._log.debug(f"executing eget w/ args: {' '.join(command)}")
         exec_command(command)
