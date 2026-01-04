@@ -100,7 +100,7 @@ class DotbotPlugin(dotbot.Plugin):
     __version__ = "0.0.1"
 
     def __init__(self, ctx):
-        super().__init__(self, ctx)
+        super().__init__(ctx)
         try:
             self._eget_exec = which("eget")
         except Exception as ex:
